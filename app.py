@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_title("Sin Filtro Studio | Producción de Episodios", layout="wide")
+st.set_page_config(page_title="Sin Filtro Studio | Producción", layout="wide")
 
 st.title("🎙️ Sin Filtro Studio — Panel de Producción")
 st.markdown("---")
@@ -36,7 +36,6 @@ with tab1:
             st.error("Por favor, carga primero los documentos de la Bóveda en el menú lateral.")
         else:
             st.info("Analizando semilla bajo los criterios de Karla y Regina...")
-            # Aquí conectaremos la lógica de IA en el siguiente paso
 
 with tab2:
     st.subheader("Paso 2: Motor de Conversación por Escenas")

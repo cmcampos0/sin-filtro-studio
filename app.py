@@ -67,8 +67,8 @@ else:
                 st.session_state.contenido_boveda = boveda_texto_completo
                 tema = semilla_usuario.strip()
                 
-                # Extracción de extractos reales de la Bóveda para contextualizar el motor
-                 lineas_boveda = [l for l in st.session_state.contenido_boveda.split('\n') if len(l.strip()) > 20]
+                # Extracción correcta sin errores de indentación
+                lineas_boveda = [l for l in st.session_state.contenido_boveda.split('\n') if len(l.strip()) > 20]
                 ref_1 = lineas_boveda[5] if len(lineas_boveda) > 5 else "Principios de ADN del programa"
                 ref_2 = lineas_boveda[12] if len(lineas_boveda) > 12 else "Memoria Viva y restricciones editoriales"
                 
@@ -77,7 +77,7 @@ else:
 * **Verificación de Memoria Viva:** Tema '{tema}' contrastado contra la Bóveda. No existen duplicidades con temporadas anteriores.
 * **Cruce de Referencias:** Conectado con antecedentes registrados (*Ref: {ref_1[:50]}...*).
 * **Respeto a Arquetipos:** Se mantiene el contraste inquebrantable entre la mirada sistémica de Karla y la empatía analítica de Regina (*Ref: {ref_2[:50]}...*).
-* **Restricciones Editorial:** Cero muletillas prohibidas, cero falsos inicios de bienvenida.
+* **Restricciones Editoriales:** Cero muletillas prohibidas, cero falsos inicios de bienvenida.
 """
                 
                 # Generación masiva del guion original estructurado para superar los 6,000 caracteres con formato TTS

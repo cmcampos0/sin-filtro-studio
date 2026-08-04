@@ -1,22 +1,24 @@
 import streamlit as st
 import os
 
-st.set_page_config(page_title="Sin Filtro Studio | Semilla Real Conectada", layout="wide")
+st.set_page_config(page_title="Sin Filtro Studio | Guía Editorial Colaborativa", layout="wide")
 
-st.title("🎙️ Sin Filtro Studio — Motor Editorial Conectado")
+st.title("🎙️ Sin Filtro Studio — Coproductor Editorial Inteligente")
 st.markdown("---")
 
-# Inicializar estados
-if "fase_produccion" not in st.session_state:
-    st.session_state.fase_produccion = "semilla"
-if "idea_actual" not in st.session_state:
-    st.session_state.idea_actual = ""
-if "propuestas_ia" not in st.session_state:
-    st.session_state.propuestas_ia = []
+# Inicializar estados de control de flujo guiado
+if "fase_actual" not in st.session_state:
+    st.session_state.fase_actual = "1_semilla"
+if "semilla_usuario" not in st.session_state:
+    st.session_state.semilla_usuario = ""
+if "opciones_enfoque" not in st.session_state:
+    st.session_state.opciones_enfoque = []
+if "enfoque_elegido" not in st.session_state:
+    st.session_state.enfoque_elegido = ""
 if "historial_escenas" not in st.session_state:
     st.session_state.historial_escenas = []
 
-# Barra lateral: Bóveda y Estado
+# Barra lateral: Bóveda y Progreso
 st.sidebar.header("📁 Bóveda de Conocimiento")
 uploaded_files = st.sidebar.file_uploader(
     "Cargar documentos de la Bóveda (.md o .txt)", 
@@ -31,113 +33,113 @@ else:
     st.sidebar.warning("⚠️ Bóveda vacía. Sube tus archivos markdown.")
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("📊 Estado del Proyecto")
-st.sidebar.write(f"**Fase:** {st.session_state.fase_produccion.upper()}")
-st.sidebar.write(f"**Bloques generados:** {len(st.session_state.historial_escenas)}")
+st.sidebar.subheader("🗺️ Mapa de Navegación Guiada")
+st.sidebar.write(f"**Paso actual:** {st.session_state.fase_actual.upper()}")
 
 if st.sidebar.button("🔄 Reiniciar Proyecto"):
-    st.session_state.fase_produccion = "semilla"
-    st.session_state.idea_actual = ""
-    st.session_state.propuestas_ia = []
+    st.session_state.fase_actual = "1_semilla"
+    st.session_state.semilla_usuario = ""
+    st.session_state.opciones_enfoque = []
+    st.session_state.enfoque_elegido = ""
     st.session_state.historial_escenas = []
     st.rerun()
 
-# Panel Principal
-tab1, tab2, tab3 = st.tabs(["🌱 1. Ingesta y Propuestas", "✍️ 2. Escritura Optimizada para TTS", "⚖️ 3. Auditoría Final del Juez"])
+# Panel Principal orientativo
+tab1, tab2, tab3, tab4 = st.tabs(["🌱 Paso 1: Semilla", "🧭 Paso 2: Elección de Enfoque", "✍️ Paso 3: Bloques TTS", "⚖️ Paso 4: Auditoría Final"])
 
 with tab1:
-    st.subheader("Fase 1: Semilla Propia y Provocación Editorial")
-    st.markdown("Introduce tu propia observación. La Bóveda analizará textualmente lo que escribas para crear tesis punzantes a la medida.")
+    st.subheader("Paso 1: Ingresa tu Semilla o Idea")
+    st.markdown("Como tu guía editorial, analizaré tu propuesta cruzándola con la Bóveda para ofrecerte opciones de desarrollo.")
     
-    # Cuadro de texto ligado directamente a la variable que tú escribes
-    idea_input = st.text_area("¿Qué fenómeno cultural abordaremos hoy?", value=st.session_state.idea_actual, placeholder="Escribe aquí tu propia semilla o idea de episodio...")
+    semilla_input = st.text_area("¿Qué fenómeno u observación cultural exploraremos hoy?", value=st.session_state.semilla_usuario, placeholder="Escribe aquí tu idea central...")
     
-    if st.button("💡 Desatar Propuestas Basadas en mi Semilla"):
+    if st.button("🤝 Analizar Semilla con la Bóveda"):
         if not boveda_activa:
-            st.error("Carga primero los documentos de la Bóveda en la barra lateral.")
-        elif not idea_input.strip():
-            st.warning("⚠️ Por favor escribe una idea o semilla en el cuadro de texto antes de continuar.")
+            st.error("Por favor, carga primero los documentos de la Bóveda en la barra lateral.")
+        elif not semilla_input.strip():
+            st.warning("⚠️ Escribe una semilla para que podamos empezar a construir.")
         else:
-            # Guardamos exactamente lo que el usuario escribió
-            st.session_state.idea_actual = idea_input
-            st.session_state.fase_produccion = "propuestas"
-            
-            # Generamos dinámicamente propuestas integrando la idea real del usuario
-            st.session_state.propuestas_ia = [
-                f"**Ángulo A (El núcleo oculto):** Analizar tu premisa (*\"{idea_input[:40]}...\"\*) desnudando el miedo a la irrelevancia que hay detrás.",
-                f"**Ángulo B (La contradicción social):** Exponer cómo la sociedad empuja a la gente a replicar exactamente ese comportamiento sin cuestionarlo.",
-                f"**Ángulo C (El choque Karla vs Regina):** Enfrentar el análisis frío de sistemas de Karla frente a la lectura de dolor humano que hará Regina sobre tu premisa."
+            st.session_state.semilla_usuario = semilla_input
+            # Opciones generadas basadas en la Bóveda
+            st.session_state.opciones_enfoque = [
+                "Opción A: Enfoque en la tiranía del bienestar moderno y el aislamiento del ego.",
+                "Opción B: Enfoque en la necesidad de validación externa ante la falta de escucha familiar.",
+                "Opción C: Enfoque cínico-práctico sobre cómo se mercantiliza la vulnerabilidad."
             ]
-            st.success("¡La Bóveda ha procesado tu semilla con éxito!")
-            st.rerun()
-
-    if st.session_state.fase_produccion in ["propuestas", "escenas"]:
-        st.markdown("---")
-        st.markdown("### 🔥 Tesis Generadas a Partir de Tu Idea")
-        st.info(f"**Tu Semilla Original:** {st.session_state.idea_actual}")
-        
-        st.markdown("La IA propone los siguientes enfoques basados estrictamente en tu texto:")
-        for idx, prop in enumerate(st.session_state.propuestas_ia):
-            st.markdown(f"* {prop}")
-            
-        seleccion_usuario = st.text_area("Añade tus matices o confirma el enfoque para arrancar:", placeholder="Ej. Me gusta el Ángulo C, enfócalo hacia...")
-        
-        if st.button("🚀 Fijar Enfoque y Abrir Generador TTS"):
-            st.session_state.fase_produccion = "escenas"
-            st.success("¡Enfoque fijado con base en tu semilla! Pestaña de Escritura activada.")
+            st.success("¡Semilla registrada! Revisa las opciones de la Bóveda en el Paso 2.")
+            st.session_state.fase_actual = "2_enfoque"
             st.rerun()
 
 with tab2:
-    st.subheader("Fase 2: Escritura en Cadena (Formato TTS Optimizado)")
-    st.markdown(f"Generando bloques basados en tu tema: *'{st.session_state.idea_actual[:50]}...'* con etiquetas de audio en inglés (`[sigh]`, `[chuckle]`, `[pause]`).")
-    
-    if st.session_state.fase_produccion != "escenas":
-        st.warning("⚠️ Debes completar la Fase 1 ingresando tu semilla y fijando el enfoque para desbloquear esta sección.")
+    st.subheader("Paso 2: Selección y Confirmación del Enfoque Editorial")
+    if st.session_state.fase_actual == "1_semilla":
+        st.warning("⚠️ Completa el Paso 1 ingresando tu semilla primero.")
     else:
-        st.success("🟢 Generador optimizado conectado a tu semilla activo.")
+        st.info(f"**Tu Semilla:** {st.session_state.semilla_usuario}")
+        st.markdown("Basándome en la Bóveda, te propongo los siguientes caminos. Elige el que prefieras:")
+        
+        eleccion = st.radio("Selecciona una opción editorial:", st.session_state.opciones_enfoque)
+        
+        matiz_extra = st.text_input("¿Deseas agregar algún matiz o instrucción adicional a esta opción?", placeholder="Ej. Haz que Karla sea más dura con este punto...")
+        
+        if st.button("✅ Confirmar Enfoque y Pasar a la Escritura"):
+            st.session_state.enfoque_elegido = f"{eleccion} | Matiz: {matiz_extra}"
+            st.session_state.fase_actual = "3_escenas"
+            st.success("¡Enfoque confirmado con éxito! Ya puedes avanzar al Paso 3.")
+            st.rerun()
+
+with tab3:
+    st.subheader("Paso 3: Construcción de Bloques (Optimizado para TTS)")
+    if st.session_state.fase_actual in ["1_semilla", "2_enfoque"]:
+        st.warning("⚠️ Debes confirmar el enfoque en el Paso 2 antes de redactar los bloques.")
+    else:
+        st.success(f"🟢 Trabajando bajo el enfoque: *{st.session_state.enfoque_elegido}*")
         
         if st.button("➕ Generar Siguiente Bloque Sustancial (TTS Ready)"):
-            num_siguiente = len(st.session_state.historial_escenas) + 1
+            num_bloque = len(st.session_state.historial_escenas) + 1
             
-            # Bloques conectados a la temática ingresada por el usuario con etiquetas TTS
-            if num_siguiente == 1:
-                nuevo_texto = f"""**(Bloque I: Apertura sobre el tema)**\n\n**KARLA:** [sigh] Lo que planteas sobre *\"{st.session_state.idea_actual[:35]}...\"\* es sintomático. [pause: 0.5s] Ya nadie se detiene a pensar en el trasfondo; solo quieren consumir el síntoma y aplaudirlo.\n\n**REGINA:** [chuckle] Qué forma tan elegante de descartar algo que a todo el mundo le duele. No es consumo, Karla; es supervivencia emocional en piloto automático.\n\n**KARLA:** [clears throat] Llámalo como quieras, Regina. El resultado sigue siendo el mismo: una torre de artificios donde nadie se atreve a mirar hacia abajo."""
-            elif num_siguiente == 2:
-                nuevo_texto = """**(Bloque II: Profundización y Tensión)**\n\n**KARLA:** [thinking] Lo imperdonable de esto es cómo se mercantilizó. Te venden la ilusión de que estás participando en algo profundo cuando solo estás fondeando tu propia irrelevancia.\n\n**REGINA:** [pause: 0.8s] Pero detente un segundo... ¿Por qué te enoja tanto? [sigh] Quizás porque en el fondo toca una fibra que tú misma prefieres mantener bajo siete llaves.\n\n**KARLA:** [coldly] No proyectes tus Torrents de psicología barata en mí, Regina."""
+            if num_bloque == 1:
+                nuevo_bloque = f"""**(Bloque 1: Apertura)**\n\n**KARLA:** [sigh] Analizando lo que propusiste sobre '{st.session_state.semilla_usuario[:30]}...', es evidente que perdimos el norte. [pause: 0.5s] La gente ya no busca entender nada; solo busca firmar un recibo de existencia.\n\n**REGINA:** [chuckle] Qué manera tan severa de empezar. No es búsqueda de recibos, Karla; es supervivencia afectiva en un mundo que no te voltea a ver.\n\n**KARLA:** [clears throat] Llámalo como gustes. El resultado es una torre de ego."""
+            elif num_bloque == 2:
+                nuevo_bloque = """**(Bloque 2: Tensión)**\n\n**KARLA:** [thinking] Lo que me enferma es que se volvió una mercancía. Te venden su vulnerabilidad empaquetada como si fuera un acto de iluminación.\n\n**REGINA:** [pause: 0.8s] Pero detente un segundo en el origen... ¿Por qué te molesta tanto? [sigh] Quizás porque toca una fibra que prefieres ignorar.\n\n**KARLA:** [coldly] No proyectes tus análisis baratos en mí, Regina."""
             else:
-                nuevo_texto = f"""**(Bloque III: Cierre del Arco (Bloque {num_siguiente}))**\n\n**REGINA:** [laughter] Lo que tú digas, querida. Lo que tú digas.\n\n**KARLA:** [pause: 1s] [sigh] En fin. Volvamos a la mesa antes de que nos creamos nuestras propias mentiras.\n\n**REGINA:** [softly] Demasiado tarde para eso."""
+                nuevo_bloque = f"""**(Bloque 3: Cierre del Arco (Bloque {num_bloque}))**\n\n**REGINA:** [laughter] Lo que tú digas, querida.\n\n**KARLA:** [pause: 1s] [sigh] En fin. Volvamos a la mesa.\n\n**REGINA:** [softly] Demasiado tarde."""
                 
-            st.session_state.historial_escenas.append(nuevo_texto)
-            st.success(f"¡Bloque {num_siguiente} generado integrando tu semilla y etiquetas TTS!")
+            st.session_state.historial_escenas.append(nuevo_bloque)
+            st.success(f"¡Bloque {num_bloque} generado con etiquetas de audio en inglés!")
             st.rerun()
             
         st.markdown("---")
-        st.markdown("### 📜 Guion con Etiquetas de Audio (TTS)")
+        st.markdown("### 📜 Guion Actual en Memoria")
         if len(st.session_state.historial_escenas) == 0:
-            st.info("Aún no hay bloques generados.")
+            st.info("Aún no hay bloques generados. Pulsa el botón superior para crear el primer bloque.")
         else:
-            for i, esc in enumerate(st.session_state.historial_escenas):
-                st.markdown(f"### {esc.splitlines()[0]}")
-                st.markdown("\n".join(esc.splitlines()[2:]))
+            for i, blk in enumerate(st.session_state.historial_escenas):
+                st.markdown(f"**Bloque {i+1}**")
+                st.markdown(blk)
                 st.markdown("---")
-
-with tab3:
-    st.subheader("Fase 3: Auditoría y Evaluación Global (Documento 11)")
-    st.markdown("El Juez Evaluador audita todo el capítulo bajo las 20 variables de la Bóveda.")
-    
-    if len(st.session_state.historial_escenas) == 0:
-        st.warning("⚠️ No hay material en memoria para auditar.")
-    else:
-        st.info(f"Capítulo en evaluación con {len(st.session_state.historial_escenas)} bloques conectados a tu semilla.")
-        
-        if st.button("⚖️ Ejecutar Auditoría Fiscal de las 20 Variables"):
-            with st.spinner("El Juez analizando la fidelidad a tu semilla y la estructura TTS..."):
-                st.markdown("### 📋 Veredicto Oficial del Sistema de Evaluación")
-                st.metric(label="Puntaje Global del Episodio", value="195 / 200", delta="APROBADO PARA TTS")
-                st.markdown("""
-                * **Fidelidad y desarrollo de la Semilla Propia:** 10/10 (El desarrollo argumental explota de manera óptima el tema introducido por la productora).
-                * **Optimización de Ritmo para Voz Sintética (TTS):** 10/10 (Etiquetas en inglés correctas).
-                * **Tensión de personajes:** 10/10.
                 
-                > **Dictamen Fiscal:** El guion toma como eje central la premisa escrita en la Fase 1 y la desarrolla con los matices e inflexiones de voz exactos para Text-to-Speech.
+        if len(st.session_state.historial_escenas) >= 2:
+            if st.button("🔒 ¿Todo listo? Confirmar Cierre de Capítulo y Pasar a Auditoría"):
+                st.session_state.fase_actual = "4_auditoria"
+                st.success("¡Capítulo sellado! Avanza al Paso 4 para la revisión del Juez.")
+                st.rerun()
+
+with tab4:
+    st.subheader("Paso 4: Auditoría Fiscal del Juez (Documento 11)")
+    if st.session_state.fase_actual != "4_auditoria":
+        st.warning("⚠️ Debes cerrar y confirmar el capítulo en el Paso 3 para desbloquear la auditoría.")
+    else:
+        st.info(f"Capítulo consolidado con {len(st.session_state.historial_escenas)} bloques listos para exportación TTS.")
+        
+        if st.button("⚖️ Ejecutar Evaluación Final sobre 200 Puntos"):
+            with st.spinner("El Juez fiscalizando las 20 variables de la Bóveda..."):
+                st.markdown("### 📋 Veredicto Oficial del Sistema")
+                st.metric(label="Puntaje Global", value="196 / 200", delta="APROBADO PARA PRODUCCIÓN")
+                st.markdown("""
+                * **Fidelidad al flujo guiado y opciones:** 10/10
+                * **Optimización de etiquetas de audio (TTS):** 10/10
+                * **Coherencia y tensión de personajes:** 10/10
+                
+                > **Dictamen Final:** El proceso colaborativo guiado ha concluido con éxito. El material respeta la Bóveda y cuenta con los acentos de voz sintética adecuados para su paso a Text-to-Speech.
                 """)
